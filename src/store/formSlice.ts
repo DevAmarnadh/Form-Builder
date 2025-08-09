@@ -68,6 +68,10 @@ const formSlice = createSlice({
         state.currentForm = [...form.fields];
       }
     },
+    deleteForm: (state, action: PayloadAction<string>) => {
+      state.savedForms = state.savedForms.filter(form => form.id !== action.payload);
+      saveForms(state.savedForms);
+    },
     clearCurrentForm: (state) => {
       state.currentForm = [];
     },
@@ -84,6 +88,7 @@ export const {
   reorderFields,
   saveForm,
   loadForm,
+  deleteForm,
   clearCurrentForm,
   setPreviewMode,
 } = formSlice.actions;

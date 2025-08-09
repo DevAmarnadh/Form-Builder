@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Container,
   Box,
@@ -10,6 +10,11 @@ import {
   Chip,
   Paper,
   IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Alert,
 } from '@mui/material';
 import {
   Visibility,
@@ -17,17 +22,20 @@ import {
   DateRange,
   ListAlt,
   Add,
+  Delete,
 } from '@mui/icons-material';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { RootState } from '../../store/store';
-import { loadForm, clearCurrentForm } from '../../store/formSlice';
+import { loadForm, clearCurrentForm, deleteForm } from '../../store/formSlice';
 
 export const MyForms: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const savedForms = useSelector((state: RootState) => state.form.savedForms);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [formToDelete, setFormToDelete] = useState<{ id: string; name: string } | null>(null);
 
   const handlePreviewForm = (formId: string) => {
     dispatch(loadForm(formId));
@@ -42,6 +50,24 @@ export const MyForms: React.FC = () => {
   const handleCreateNew = () => {
     dispatch(clearCurrentForm());
     navigate('/create');
+  };
+
+  const handleDeleteForm = (formId: string, formName: string) => {
+    setFormToDelete({ id: formId, name: formName });
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (formToDelete) {
+      dispatch(deleteForm(formToDelete.id));
+      setDeleteDialogOpen(false);
+      setFormToDelete(null);
+    }
+  };
+
+  const cancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setFormToDelete(null);
   };
 
   const formatDate = (dateString: string) => {
@@ -197,6 +223,16 @@ export const MyForms: React.FC = () => {
                         {form.name}
                       </Typography>
                     </Box>
+                    <IconButton
+                      onClick={() => handleDeleteForm(form.id, form.name)}
+                      sx={{
+                        color: '#d32f2f',
+                        '&:hover': { backgroundColor: '#d32f2f10' },
+                      }}
+                      size="small"
+                    >
+                      <Delete />
+                    </IconButton>
                   </Box>
 
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, color: '#b0b0b0' }}>
@@ -252,6 +288,30 @@ export const MyForms: React.FC = () => {
           );
         })}
       </Box>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onClose={cancelDelete} maxWidth="sm" fullWidth>
+        <DialogTitle>Delete Form</DialogTitle>
+        <DialogContent>
+          <Alert severity="warning" sx={{ mb: 2 }}>
+            This action cannot be undone. The form will be permanently deleted.
+          </Alert>
+          <Typography>
+            Are you sure you want to delete <strong>"{formToDelete?.name}"</strong>?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={cancelDelete}>Cancel</Button>
+          <Button
+            onClick={confirmDelete}
+            variant="contained"
+            color="error"
+            startIcon={<Delete />}
+          >
+            Delete Form
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };
