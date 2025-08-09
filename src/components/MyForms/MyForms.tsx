@@ -15,6 +15,7 @@ import {
   DialogContent,
   DialogActions,
   Alert,
+  Tooltip,
 } from '@mui/material';
 import {
   Visibility,
@@ -223,16 +224,25 @@ export const MyForms: React.FC = () => {
                         {form.name}
                       </Typography>
                     </Box>
-                    <IconButton
-                      onClick={() => handleDeleteForm(form.id, form.name)}
-                      sx={{
-                        color: '#d32f2f',
-                        '&:hover': { backgroundColor: '#d32f2f10' },
-                      }}
-                      size="small"
-                    >
-                      <Delete />
-                    </IconButton>
+                    <Tooltip title="Delete form">
+                      <IconButton
+                        onClick={() => handleDeleteForm(form.id, form.name)}
+                        sx={{
+                          color: '#d32f2f',
+                          backgroundColor: 'rgba(211, 47, 47, 0.1)',
+                          border: '1px solid rgba(211, 47, 47, 0.3)',
+                          '&:hover': { 
+                            backgroundColor: 'rgba(211, 47, 47, 0.2)',
+                            border: '1px solid rgba(211, 47, 47, 0.5)',
+                            transform: 'scale(1.1)',
+                          },
+                          transition: 'all 0.2s ease-in-out',
+                        }}
+                        size="medium"
+                      >
+                        <Delete sx={{ fontSize: 20 }} />
+                      </IconButton>
+                    </Tooltip>
                   </Box>
 
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, color: '#b0b0b0' }}>
@@ -278,10 +288,30 @@ export const MyForms: React.FC = () => {
                     startIcon={<Edit />}
                     onClick={() => handleEditForm(form.id)}
                     variant="outlined"
-                    sx={{ borderRadius: 1.5 }}
+                    sx={{ mr: 1, borderRadius: 1.5 }}
                   >
                     Edit
                   </Button>
+                  <Tooltip title="Delete this form">
+                    <Button
+                      size="small"
+                      startIcon={<Delete />}
+                      onClick={() => handleDeleteForm(form.id, form.name)}
+                      variant="outlined"
+                      color="error"
+                      sx={{ 
+                        borderRadius: 1.5,
+                        borderColor: '#d32f2f',
+                        color: '#d32f2f',
+                        '&:hover': {
+                          borderColor: '#d32f2f',
+                          backgroundColor: 'rgba(211, 47, 47, 0.1)',
+                        }
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </Tooltip>
                 </CardActions>
               </Card>
             </Box>
